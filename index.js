@@ -35,7 +35,7 @@ const run = async () => {
       const result = await cursor.toArray();
       res.send(result);
     });
-    // get food by id
+    // get booking by id
     app.get("/bookings/:id", async (req, res) => {
       let { id } = req.params;
       try {
@@ -72,6 +72,21 @@ const run = async () => {
 
       res.send(result);
     });
+
+    app.post("/create-payment-intent", async (req, res) => {
+      const booking = req.body;
+      const price = booking.price;
+      const amount = price * 100;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        currency: "usd",
+        amount: amount,
+        payment_method_types: ["card"],
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
   } finally {
   }
 };
@@ -79,7 +94,7 @@ run().catch(console.dir);
 
 //
 app.get("/", (req, res) => {
-  res.send("Hello from red onion!");
+  res.send("Hello from BD Ambulance!");
 });
 
 // app listen
